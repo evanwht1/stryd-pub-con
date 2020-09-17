@@ -1,7 +1,3 @@
-import blocking.Consumer;
-import blocking.MessageQueueFactory;
-import blocking.Publisher;
-
 import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -25,7 +21,7 @@ public class PubConApp {
             while (true) {
                 try {
                     publisher.publish("Message " + Thread.currentThread().getName() + " " + n++, Duration.ofMillis(100));
-                    Thread.sleep(500);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (TimeoutException e) {

@@ -1,5 +1,3 @@
-package blocking;
-
 import java.time.Duration;
 import java.util.concurrent.TimeoutException;
 
@@ -11,9 +9,9 @@ import java.util.concurrent.TimeoutException;
  */
 public class Publisher<T> {
 
-    private final BlockingBuffer<T> queue;
+    private final MessageQueue<T> queue;
 
-    public Publisher(final BlockingBuffer<T> queue) {
+    public Publisher(final MessageQueue<T> queue) {
         this.queue = queue;
     }
 

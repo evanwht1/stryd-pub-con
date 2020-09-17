@@ -1,5 +1,3 @@
-package blocking;
-
 import java.time.Duration;
 import java.util.concurrent.TimeoutException;
 
@@ -11,9 +9,9 @@ import java.util.concurrent.TimeoutException;
  */
 public class Consumer<T> {
 
-    private final BlockingBuffer<T> queue;
+    private final MessageQueue<T> queue;
 
-    public Consumer(final BlockingBuffer<T> queue) {
+    public Consumer(final MessageQueue<T> queue) {
         this.queue = queue;
     }
 
