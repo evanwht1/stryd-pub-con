@@ -21,18 +21,22 @@ public class BlockingBuffer<T> {
         this.entries = (T[]) new Object[size];
     }
 
+    public void add(final T t) throws InterruptedException, TimeoutException {
+        add(t, Duration.ZERO);
+    }
+
     public void add(final T t, Duration timeout) throws InterruptedException, TimeoutException {
         synchronized (lockObject) {
             final long start = System.nanoTime();
             while (size == entries.length) {
                 // wait until a get has occurred
                 if (timeout.isZero()) {
-                    wait();
+                    lockObject.wait();
                 } else {
-                    wait(Math.max(1, Duration.ofNanos(timeRemaining(timeout, start)).toMillis()));
+                    lockObject.wait(Math.max(1, Duration.ofNanos(timeRemaining(timeout, start)).toMillis()));
                     if (timeRemaining(timeout, start) < 0) {
                         // very might have space in array but we already went over the timeout so touch luck
-                        throw new TimeoutException("No objects available");
+                        throw new TimeoutException("No space available");
                     }
                 }
             }
@@ -40,7 +44,7 @@ public class BlockingBuffer<T> {
             entries[nextPos] = t;
             size++;
             // notify one of the waiting get calls
-            notify();
+            lockObject.notify();
         }
     }
 
@@ -58,9 +62,9 @@ public class BlockingBuffer<T> {
             while (size == 0) {
                 // wait until an add has occurred
                 if (timeout.isZero()) {
-                    wait();
+                    lockObject.wait();
                 } else {
-                    wait(Math.max(1, Duration.ofNanos(timeRemaining(timeout, start)).toMillis()));
+                    lockObject.wait(Math.max(1, Duration.ofNanos(timeRemaining(timeout, start)).toMillis()));
                     if (timeRemaining(timeout, start) < 0) {
                         // very might have something in array but we already went over the timeout so touch luck
                         throw new TimeoutException("No objects available");
@@ -74,7 +78,7 @@ public class BlockingBuffer<T> {
             }
             size--;
             // notify one of the waiting add calls
-            notify();
+            lockObject.notify();
             return t;
         }
     }

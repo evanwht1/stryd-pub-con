@@ -28,4 +28,8 @@ public class Publisher<T> {
     public void publish(final T object, Duration timeout) throws InterruptedException, TimeoutException {
         queue.add(object, timeout);
     }
+
+    public void publish(final T object) throws InterruptedException, TimeoutException {
+        queue.add(object);
+    }
 }
