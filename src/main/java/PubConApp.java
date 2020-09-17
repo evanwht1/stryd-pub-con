@@ -18,7 +18,7 @@ public class PubConApp {
         Publisher<String> publisher = messageQueueFactory.createPublisher();
         Consumer<String> consumer = messageQueueFactory.createConsumer();
 
-        ExecutorService service = Executors.newFixedThreadPool(3);
+        ExecutorService service = Executors.newFixedThreadPool(4);
 
         Runnable pub = () -> {
             int n = 0;
@@ -37,8 +37,8 @@ public class PubConApp {
         Runnable con = () -> {
             while (true) {
                 try {
-                    System.out.println(consumer.consume(Duration.ofMillis(200)));
-                    Thread.sleep(200);
+                    System.out.println(consumer.consume(Duration.ofMillis(100)));
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (TimeoutException e) {
@@ -47,6 +47,7 @@ public class PubConApp {
             }
         };
 
+        service.execute(pub);
         service.execute(pub);
         service.execute(con);
         service.execute(con);
