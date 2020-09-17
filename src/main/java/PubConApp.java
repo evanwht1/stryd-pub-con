@@ -1,6 +1,7 @@
 import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -17,11 +18,12 @@ public class PubConApp {
         ExecutorService service = Executors.newFixedThreadPool(4);
 
         Runnable pub = () -> {
+            final ThreadLocalRandom random = ThreadLocalRandom.current();
             int n = 0;
             while (true) {
                 try {
                     publisher.publish("Message " + Thread.currentThread().getName() + " " + n++, Duration.ofMillis(100));
-                    Thread.sleep(1000);
+                    Thread.sleep(random.nextInt(500, 1000));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (TimeoutException e) {
@@ -31,10 +33,11 @@ public class PubConApp {
         };
 
         Runnable con = () -> {
+            final ThreadLocalRandom random = ThreadLocalRandom.current();
             while (true) {
                 try {
                     System.out.println(consumer.consume(Duration.ofMillis(100)));
-                    Thread.sleep(500);
+                    Thread.sleep(random.nextInt(500, 1000));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (TimeoutException e) {

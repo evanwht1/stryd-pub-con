@@ -51,10 +51,8 @@ public class LockedBuffer<T> implements MessageQueue<T> {
                     // 0 = on timeout
                     spaceAvailable.await();
                 } else {
-                    // wait for a minimum of 1 mic. putting 0 would make this wait indefinitely
-                    spaceAvailable.await(Math.max(1, Duration.ofNanos(timeRemaining(timeout, start)).toMillis()), TimeUnit.MICROSECONDS);
-                    if (timeRemaining(timeout, start) < 0) {
-                        // might have space in array but we already went over the timeout so tough luck
+                    // wait for a minimum of 1 us. putting 0 would make this wait indefinitely
+                    if (!spaceAvailable.await(Math.max(1, timeRemaining(timeout, start)), TimeUnit.NANOSECONDS)) {
                         throw new TimeoutException("No space available");
                     }
                 }
@@ -92,10 +90,8 @@ public class LockedBuffer<T> implements MessageQueue<T> {
                     // 0 = no timeout
                     itemAvailable.await();
                 } else {
-                    // wait for a minimum of 1 mic. putting 0 would make this wait indefinitely
-                    itemAvailable.await(Math.max(1, Duration.ofNanos(timeRemaining(timeout, start)).toMillis()), TimeUnit.MICROSECONDS);
-                    if (timeRemaining(timeout, start) < 0) {
-                        // might have something in array but we already went over the timeout so tough luck
+                    // wait for a minimum of 1 us. putting 0 would make this wait indefinitely
+                    if (!itemAvailable.await(Math.max(1, timeRemaining(timeout, start)), TimeUnit.NANOSECONDS)) {
                         throw new TimeoutException("No objects available");
                     }
                 }

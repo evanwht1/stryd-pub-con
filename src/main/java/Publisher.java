@@ -2,8 +2,8 @@ import java.time.Duration;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Publisher of objects to a queue that will block the thread that called it until it can succesfully publish
- * the object or times out.
+ * Publisher of objects to a {@link MessageQueue}. This will block until it can successfully publish
+ * the object.
  *
  * @author evanwht1@gmail.com
  */
@@ -11,23 +11,28 @@ public class Publisher<T> {
 
     private final MessageQueue<T> queue;
 
-    public Publisher(final MessageQueue<T> queue) {
+    Publisher(final MessageQueue<T> queue) {
         this.queue = queue;
     }
 
     /**
-     * Publishes an object to a message queue. Will wait up to duration amount of time, at which point
-     * if the object was not published it will return false.
+     * Publishes an object to a message queue. Will wait up to the specified amount of time, at which point
+     * if the object was not published it will throw a timeout exception.
      *
      * @param object object to publish
-     * @return whether or not the object was published to the queue
      * @throws InterruptedException if the thread was interrupted while waiting to publish to the queue
      */
     public void publish(final T object, Duration timeout) throws InterruptedException, TimeoutException {
         queue.add(object, timeout);
     }
 
-    public void publish(final T object) throws InterruptedException, TimeoutException {
+    /**
+     * Publishes an object to a message queue. Will wait indefinitely until it can either publish or is interrupted.
+     *
+     * @param object object to publish
+     * @throws InterruptedException if the thread was interrupted while waiting to publish to the queue
+     */
+    public void publish(final T object) throws InterruptedException {
         queue.add(object);
     }
 }
